@@ -102,6 +102,7 @@ echo "notebook running on $MACHINE"
 setup_port_forwarding
 
 sleep 5
+echo 
 echo "== Connecting to notebook =="
 
 # Print logs for the user, in case needed

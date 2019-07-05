@@ -98,14 +98,11 @@ function get_machine() {
 
     done
 
-    echo $MACHINE
     MACHINE="`ssh ${RESOURCE} squeue --name=$NAME --user=$USERNAME -o "%R" -h`"
-    echo $MACHINE
 
     # If we didn't get a node...
     if ([[ "${RESOURCE}" = "sherlock" ]] && [[ "$MACHINE" != "sh"* ]]) ||
-       ([[ "${RESOURCE}" = "rice" ]] && [[ "$MACHINE" != "wheat"* ]] && [[ "$MACHINE" != "oat"* ]])
-        then
+       ([[ "${RESOURCE}" = "rice" ]] && [[ "$MACHINE" != "wheat"* ]] && [[ "$MACHINE" != "oat"* ]]); then
         echo "Tried ${ATTEMPTS} attempts!"  1>&2
         exit 1
     fi

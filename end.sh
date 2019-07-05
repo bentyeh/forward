@@ -4,7 +4,7 @@
 # 
 # Usage: bash end.sh [params_file] [NAME]
 # - params_file: path to sbatch job parameters file. default = params.sh
-# - NAME: SLURM job name. If not given as an argument, taken from params_file.
+# - NAME: sbatch job name. If not given as an argument, taken from params_file.
 # 
 # Sample usage                      # Assumptions
 #   bash end.sh                     # params.sh exists; NAME is set by params.sh
