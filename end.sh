@@ -48,3 +48,7 @@ else
     LSOF="/usr/bin/lsof"
 fi
 ssh ${RESOURCE} "$LSOF -i :$PORT -t | xargs --no-run-if-empty kill"
+
+# lsof is not supported on WSL
+# echo "Killing listeners on localhost"
+# lsof -i:$LOCALPORT -t | xargs --no-run-if-empty kill
