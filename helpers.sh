@@ -62,7 +62,7 @@ function set_partition() {
     if [ "${PARTITION}" == "gpu" ];
     then
         echo "== Requesting GPU =="
-        PARTITION="${PARTITION} --gres gpu:1"
+        PARTITION="${PARTITION} --gres gpu:${GPU}"
     fi
 }
 
@@ -92,7 +92,9 @@ function get_machine() {
         sleep $TIMEOUT
 
         ATTEMPT=$(( ATTEMPT + 1 ))
-        TIMEOUT=$(( TIMEOUT * 2 ))
+        if [ -z ${MAXTIMEOUT} ] || [ ${TIMEOUT} -lt ${MAXTIMEOUT} ]; then
+            TIMEOUT=$(( TIMEOUT * 2 ))
+        fi
 
     done
 
@@ -101,7 +103,8 @@ function get_machine() {
     echo $MACHINE
 
     # If we didn't get a node...
-    if [[ "$MACHINE" != "sh"* ]]
+    if ([[ "${RESOURCE}" = "sherlock" ]] && [[ "$MACHINE" != "sh"* ]]) ||
+       ([[ "${RESOURCE}" = "rice" ]] && [[ "$MACHINE" != "wheat"* ]] && [[ "$MACHINE" != "oat"* ]])
         then
         echo "Tried ${ATTEMPTS} attempts!"  1>&2
         exit 1
@@ -117,14 +120,14 @@ function get_machine() {
 function instruction_get_logs() {
     echo
     echo "== View logs in separate terminal =="
-    echo "ssh ${RESOURCE} cat $RESOURCE_HOME/forward-util/${SBATCH_NAME}.out"
-    echo "ssh ${RESOURCE} cat $RESOURCE_HOME/forward-util/${SBATCH_NAME}.err"
+    echo "ssh ${RESOURCE} cat $RESOURCE_HOME/forward-util/${NAME}.out"
+    echo "ssh ${RESOURCE} cat $RESOURCE_HOME/forward-util/${NAME}.err"
 }
 
 function print_logs() {
 
-    ssh ${RESOURCE} cat $RESOURCE_HOME/forward-util/${SBATCH_NAME}.out
-    ssh ${RESOURCE} cat $RESOURCE_HOME/forward-util/${SBATCH_NAME}.err
+    ssh ${RESOURCE} cat $RESOURCE_HOME/forward-util/${NAME}.out
+    ssh ${RESOURCE} cat $RESOURCE_HOME/forward-util/${NAME}.err
 
 }
 
@@ -137,7 +140,7 @@ function setup_port_forwarding() {
     echo
     echo "== Setting up port forwarding =="
     sleep 5
-    echo "ssh -L $PORT:localhost:$PORT ${RESOURCE} ssh -L $PORT:localhost:$PORT -N $MACHINE &"
-    ssh -L $PORT:localhost:$PORT ${RESOURCE} ssh -L $PORT:localhost:$PORT -N "$MACHINE" &
+    echo "ssh -N -L localhost:$LOCALPORT:$MACHINE:$PORT ${RESOURCE}"
+    ssh -N -L localhost:$LOCALPORT:$MACHINE:$PORT ${RESOURCE} &
 
 }

@@ -37,6 +37,8 @@ You can always edit `params.sh` later to change these configuration options.
 
 #### Parameters
 
+ - **NAME** specifies the sbatch job name, i.e., the name shown by squeue
+ - **SCRIPT** specifies the sbatch script filename
  - **RESOURCE** should refer to an identifier for your cluster resource that will be recorded in your ssh configuration, and then referenced in the scripts to interact with the resource (e.g., `ssh sherlock`).
  - **PARTITION** If you intend to use a GPU (e.g., [sbatches/py2-tensorflow.sbatch](sbatches/py2-tensorflow.sbatch) the name of the PARTITION variable should be "gpu."
  - **CONTAINERSHARE** (optional) is a location on your cluster resource (typically world readable) where you might find containers (named by a hash of the container name in the [library]() that are ready to go! If you are at Stanford, leave this to be default. If you aren't, then ask your cluster admin about [setting up a containershare](https://www.github.com/vsoch/containershare)
