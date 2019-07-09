@@ -38,10 +38,9 @@ source "$params_file"
 [ ! -z $NAME_ARG ] && NAME=$NAME_ARG
 [ -z $NAME ] && echo "Need to give NAME of sbatch job to resume!" 1>&2 && exit 1
 
-echo "Looking up existing job: ssh ${RESOURCE} squeue --name=$NAME --user=$USERNAME -o \"%N %L\" -h"
-RESULT=`ssh ${RESOURCE} squeue --name=$NAME --user=$USERNAME -o \"%N %L\" -h`
-MACHINE="${RESULT%% *}"
-TIME_LEFT="${RESULT##* }"
-echo "Node: $MACHINE, Time remaining: $TIME_LEFT"
+echo "Looking up existing job: ssh ${RESOURCE} squeue --name=$NAME --user=$USERNAME -o \"%N %T %L %C %m\" -h"
+RESULT=`ssh ${RESOURCE} squeue --name=$NAME --user=$USERNAME -o \"%N %T %L %C %m\" -h`
+read MACHINE STATE TIME_LEFT CPU MEM <<< "$RESULT"
+echo "Node: $MACHINE. Job state: $STATE. Time remaining: $TIME_LEFT. CPUs: $CPU. Memory: $MEM."
 echo "Resuming port forwarding: ssh -N -L localhost:$LOCALPORT:$MACHINE:$PORT $RESOURCE &"
 ssh -N -L localhost:$LOCALPORT:$MACHINE:$PORT $RESOURCE &
