@@ -84,6 +84,7 @@ command="sbatch
     --partition=$PARTITION
     --output=$RESOURCE_HOME/forward-util/$NAME.out
     --error=$RESOURCE_HOME/forward-util/$NAME.err
+    -c=$CPU
     --mem=$MEM
     --time=$TIME
     --exclude=$EXCLUDE
