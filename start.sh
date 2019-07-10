@@ -79,7 +79,14 @@ echo
 echo "== Submitting sbatch =="
 
 SBATCH_NAME=$(basename $SBATCH)
-command="sbatch
+if [[ -z $SLURM_COMMAND ]]; then
+    if [[ $PARTITION = "dev" ]]; then
+        SLURM_COMMAND="srun"
+    else
+        SLURM_COMMAND="sbatch"
+    fi
+fi
+command="$SLURM_COMMAND
     --job-name=$NAME
     --partition=$PARTITION
     --output=$RESOURCE_HOME/forward-util/$NAME.out
@@ -91,7 +98,11 @@ command="sbatch
     $RESOURCE_HOME/forward-util/$SBATCH_NAME $PORT \"${WD}\" $ENV"
 
 echo ${command}
-ssh ${RESOURCE} ${command}
+if [[ $SLURM_COMMAND = "srun" ]]; then
+    ssh ${RESOURCE} ${command} &> /dev/null &
+else
+    ssh ${RESOURCE} ${command}
+fi
 
 # Tell the user how to debug before trying
 instruction_get_logs
