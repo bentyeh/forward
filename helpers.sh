@@ -74,14 +74,14 @@ function get_machine() {
 
     echo
     echo "== Waiting for job to start, using exponential backoff =="
-    MACHINE=""
+    [ -z ${MINATTEMPTS} ] && MINATTEMPTS=3
 
     ALLOCATED="no"
     while [[ $ALLOCATED == "no" ]]; do
 
         read JOBID MACHINE <<< `ssh ${RESOURCE} squeue --name=$NAME --user=$USERNAME -o \"%i %N\" -h`
 
-        if [[ -z $JOBID ]]; then
+        if [ -z $JOBID ] && [ ${ATTEMPT} -gt ${MINATTEMPTS} ]; then
             echo "No job with name $NAME and user $USERNAME on $RESOURCE found."
             exit
         fi
@@ -107,7 +107,7 @@ function get_machine() {
     # If we didn't get a node...
     if ([[ "${RESOURCE}" = "sherlock" ]] && [[ "$MACHINE" != "sh"* ]]) ||
        ([[ "${RESOURCE}" = "rice" ]] && [[ "$MACHINE" != "wheat"* ]] && [[ "$MACHINE" != "oat"* ]]); then
-        echo "Tried ${ATTEMPTS} attempts!"  1>&2
+        echo "Tried ${ATTEMPT} attempts! Job was either never enqueued or finished running already." 1>&2
         exit 1
     fi
 }
