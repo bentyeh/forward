@@ -80,7 +80,7 @@ echo "== Submitting sbatch =="
 
 SBATCH_NAME=$(basename $SBATCH)
 if [[ -z $SLURM_COMMAND ]]; then
-    if [[ $PARTITION = "dev" ]]; then
+    if [[ $PARTITION =~ "dev" ]]; then
         SLURM_COMMAND="srun"
     else
         SLURM_COMMAND="sbatch"
