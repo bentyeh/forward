@@ -59,9 +59,10 @@ function check_previous_submit() {
 
 function set_partition() {
 
-    if [ "${PARTITION}" == "gpu" ];
-    then
+    if [[ "${PARTITION}" =~ "gpu" ]]; then
+        echo
         echo "== Requesting GPU =="
+        echo "${GPU}"
         PARTITION="${PARTITION} --gres gpu:${GPU}"
     fi
 }
@@ -76,17 +77,20 @@ function get_machine() {
     MACHINE=""
 
     ALLOCATED="no"
-    while [[ $ALLOCATED == "no" ]]
-      do
-                                                                  # nodelist
-          MACHINE=`ssh ${RESOURCE} squeue --name=$NAME --user=$USERNAME -o "%N" -h`
-    
-          if [[ "$MACHINE" != "" ]]
-          then
-              echo "Attempt ${ATTEMPT}: resources allocated to ${MACHINE}!.."  1>&2
-              ALLOCATED="yes"
-              break
-          fi
+    while [[ $ALLOCATED == "no" ]]; do
+
+        read JOBID MACHINE <<< `ssh ${RESOURCE} squeue --name=$NAME --user=$USERNAME -o \"%i %N\" -h`
+
+        if [[ -z $JOBID ]]; then
+            echo "No job with name $NAME and user $USERNAME on $RESOURCE found."
+            exit
+        fi
+
+        if [[ "$MACHINE" != "" ]]; then
+            echo "Attempt ${ATTEMPT}: resources allocated to ${MACHINE}!.."  1>&2
+            ALLOCATED="yes"
+            break
+        fi
 
         echo "Attempt ${ATTEMPT}: not ready yet... retrying in $TIMEOUT.."  1>&2
         sleep $TIMEOUT
