@@ -2,10 +2,10 @@
 #
 # Resumes an already running remote sbatch job.
 # 
-# Usage: bash resume.sh [params_file] [NAME] [--status-only]
+# Usage: bash resume.sh [params_file] [NAME] [--no-forward]
 # - params_file: path to sbatch job parameters file. default = params.sh
 # - NAME: sbatch job name. If not given as an argument, taken from params_file.
-# - --status-only: print job status without port forwarding
+# - --no-forward: print job status but do not setup port forwarding
 #
 # Sample usage                         # Assumptions
 #   bash resume.sh                     # params.sh exists; NAME is set by params.sh
@@ -23,14 +23,14 @@
 # Unset NAME variable in case it is in use (e.g., by WSL)
 unset NAME
 
-# Check for "--status-only" argument and shift arguments $1, $2, ... accordingly
+# Check for "--no-forward" argument and shift arguments $1, $2, ... accordingly
 # - https://stackoverflow.com/questions/255898/how-to-iterate-over-arguments-in-a-bash-script
 # - https://stackoverflow.com/questions/4827690/how-to-change-a-command-line-argument-in-bash
 argc=$#
 argv=($@)
 for ((i=0; i<argc; i++)); do
-    if [[ "${argv[$i]}" = "--status-only" ]]; then
-        status_only="true"
+    if [[ "${argv[$i]}" = "--no-forward" ]]; then
+        no_forward="true"
         if [[ $i -eq 0 ]]; then
             set -- "${@:$(($i+2)):$argc}"
         else
@@ -68,7 +68,7 @@ elif [[ -z $MACHINE ]]; then
 else
     echo "Job ID: $JOBID. Job state: $STATE. Time remaining: $TIME_LEFT." \
          "CPUs: $CPUS. Memory: $MEM. Nodelist: $MACHINE."
-    if [[ -z $status_only ]]; then
+    if [[ -z $no_forward ]]; then
         echo "Resuming port forwarding: ssh -N -L localhost:$LOCALPORT:$MACHINE:$PORT $RESOURCE &"
         ssh -N -L localhost:$LOCALPORT:$MACHINE:$PORT $RESOURCE &
     fi
