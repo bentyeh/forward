@@ -2,9 +2,10 @@
 #
 # Resumes an already running remote sbatch job.
 # 
-# Usage: bash resume.sh [params_file] [NAME]
+# Usage: bash resume.sh [params_file] [NAME] [--status-only]
 # - params_file: path to sbatch job parameters file. default = params.sh
 # - NAME: sbatch job name. If not given as an argument, taken from params_file.
+# - --status-only: print job status without port forwarding
 #
 # Sample usage                         # Assumptions
 #   bash resume.sh                     # params.sh exists; NAME is set by params.sh
@@ -21,6 +22,23 @@
 
 # Unset NAME variable in case it is in use (e.g., by WSL)
 unset NAME
+
+# Check for "--status-only" argument and shift arguments $1, $2, ... accordingly
+# - https://stackoverflow.com/questions/255898/how-to-iterate-over-arguments-in-a-bash-script
+# - https://stackoverflow.com/questions/4827690/how-to-change-a-command-line-argument-in-bash
+argc=$#
+argv=($@)
+for ((i=0; i<argc; i++)); do
+    if [[ "${argv[$i]}" = "--status-only" ]]; then
+        status_only="true"
+        if [[ $i -eq 0 ]]; then
+            set -- "${@:$(($i+2)):$argc}"
+        else
+            set -- "${@:1:$(($i))}" "${@:$(($i+2)):$argc}"
+        fi
+        break
+    fi
+done
 
 params_file=$1
 if [ ! -f "$params_file" ]; then
@@ -40,16 +58,18 @@ source "$params_file"
 
 echo "Looking up existing job: ssh ${RESOURCE} squeue --name=$NAME --user=$USERNAME -o \"%i %T %L %C %m %N\" -h"
 RESULT=`ssh ${RESOURCE} squeue --name=$NAME --user=$USERNAME -o \"%i %T %L %C %m %N\" -h`
-read JOB_ID STATE TIME_LEFT CPU MEM MACHINE <<< "$RESULT"
-if [[ -z $JOB_ID ]]; then
+read JOBID STATE TIME_LEFT CPUS MEM MACHINE <<< "$RESULT"
+if [[ -z $JOBID ]]; then
     echo "No job with name $NAME and user $USERNAME on $RESOURCE found."
 elif [[ -z $MACHINE ]]; then
     echo "No nodes currently allocated."
-    echo "Job ID: $JOB_ID. Job state: $STATE. Time remaining: $TIME_LEFT." \
-         "CPUs: $CPU. Memory: $MEM."
+    echo "Job ID: $JOBID. Job state: $STATE. Time remaining: $TIME_LEFT." \
+         "CPUs: $CPUS. Memory: $MEM."
 else
-    echo "Job ID: $JOB_ID. Job state: $STATE. Time remaining: $TIME_LEFT." \
-         "CPUs: $CPU. Memory: $MEM. Nodelist: $MACHINE."
-    echo "Resuming port forwarding: ssh -N -L localhost:$LOCALPORT:$MACHINE:$PORT $RESOURCE &"
-    ssh -N -L localhost:$LOCALPORT:$MACHINE:$PORT $RESOURCE &
+    echo "Job ID: $JOBID. Job state: $STATE. Time remaining: $TIME_LEFT." \
+         "CPUs: $CPUS. Memory: $MEM. Nodelist: $MACHINE."
+    if [[ -z $status_only ]]; then
+        echo "Resuming port forwarding: ssh -N -L localhost:$LOCALPORT:$MACHINE:$PORT $RESOURCE &"
+        ssh -N -L localhost:$LOCALPORT:$MACHINE:$PORT $RESOURCE &
+    fi
 fi
