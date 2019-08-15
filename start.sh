@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Starts a remote sbatch jobs and sets up correct port forwarding.
+# Starts a remote sbatch job and sets up correct port forwarding.
 # 
 # Usage: bash start.sh [params_file] [SCRIPT] [--no-forward]
 # - params_file: path to sbatch job parameters file. default = params.sh
