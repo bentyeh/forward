@@ -11,11 +11,11 @@ source ~/.bashrc
 module load rstudio
 
 module load system
-module load cairo
+module load cairo          # required for png(), etc.
 module load gcc/9.1.0      # required for Rstudio server
+module load fftw           # required for EBImage
 
 # modules for installing certain packages
-# module load fftw           # Cardinal 
 # module load libjpeg-turbo  # Cardinal
 # module load libtiff        # Cardinal
 # module load netcdf         # mzR
@@ -23,4 +23,6 @@ module load gcc/9.1.0      # required for Rstudio server
 
 conda activate $ENV
 
-rserver --www-address="$(hostname)" --www-port="$PORT" --auth-validate-users=1 --rsession-which-r "$(which R)" --rsession-ld-library-path "~/miniconda3/envs/r/lib"
+printenv > ~/curenv.txt
+
+rserver --www-address="$(hostname)" --www-port="$PORT" --auth-validate-users=1 --rsession-ld-library-path "$(realpath -m \"~/miniconda3/envs/$ENV/lib\")"

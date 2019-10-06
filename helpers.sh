@@ -59,7 +59,7 @@ function check_previous_submit() {
 
 function set_partition() {
 
-    if [[ "${PARTITION}" =~ "gpu" ]]; then
+    if [[ "${PARTITION}" =~ "gpu" ]] || { [ ! -z $GPU ] && [ $GPU -gt 0 ]; }; then
         echo
         echo "== Requesting GPU =="
         echo "${GPU}"

@@ -105,6 +105,8 @@ if [[ -z $SLURM_COMMAND ]]; then
         SLURM_COMMAND="sbatch"
     fi
 fi
+[ -z $EXCLUDE ] && EXCLUDE="" || EXCLUDE="--exclude=$EXCLUDE"
+[ -z $QOS ] && QOS="" || QOS="--qos=$QOS"
 command="$SLURM_COMMAND
     --job-name=$NAME
     --partition=$PARTITION
@@ -113,7 +115,8 @@ command="$SLURM_COMMAND
     -c $CPU
     --mem=$MEM
     --time=$TIME
-    --exclude=$EXCLUDE
+    $EXCLUDE
+    $QOS
     $RESOURCE_HOME/forward-util/$SBATCH_NAME $PORT \"${WD}\" $ENV"
 
 echo ${command}

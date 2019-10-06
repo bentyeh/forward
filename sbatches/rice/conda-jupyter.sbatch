@@ -4,6 +4,7 @@ NOTEBOOK_DIR=${2:-${HOME}}
 ENV=$3
 cd $NOTEBOOK_DIR
 
+source /etc/profile # required for Lmod system
 source ~/.bashrc
 export XDG_RUNTIME_DIR=''
 conda activate $ENV
