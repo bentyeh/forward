@@ -107,6 +107,7 @@ if [[ -z $SLURM_COMMAND ]]; then
 fi
 [ -z $EXCLUDE ] && EXCLUDE="" || EXCLUDE="--exclude=$EXCLUDE"
 [ -z $QOS ] && QOS="" || QOS="--qos=$QOS"
+[ -z $CONSTRAINT ] && CONSTRAINT="" || CONSTRAINT="--constraint=$CONSTRAINT"
 command="$SLURM_COMMAND
     --job-name=$NAME
     --partition=$PARTITION
@@ -117,6 +118,7 @@ command="$SLURM_COMMAND
     --time=$TIME
     $EXCLUDE
     $QOS
+    $CONSTRAINT
     $RESOURCE_HOME/forward-util/$SBATCH_NAME $PORT \"${WD}\" $ENV"
 
 echo ${command}
