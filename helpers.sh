@@ -6,6 +6,13 @@
 # Configuration
 #
 
+function verify_arguments() {
+    if [ ! -z $GPU ] && [ $GPU -gt 0 ] && [[ "$CONSTRAINT" =~ "NO_GPU" ]]; then
+        echo "Request for $GPU GPUs not compatible with 'NO_GPU' CONSTRAINT."
+        exit 1
+    fi
+}
+
 function set_forward_script() {
 
     FOUND="no"

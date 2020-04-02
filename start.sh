@@ -79,6 +79,7 @@ source helpers.sh
 SBATCH="$SCRIPT.sbatch"
 
 # set FORWARD_SCRIPT and FOUND
+verify_arguments
 set_forward_script
 check_previous_submit
 
