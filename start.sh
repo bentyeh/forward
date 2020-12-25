@@ -109,12 +109,14 @@ fi
 [ -z $EXCLUDE ] && EXCLUDE="" || EXCLUDE="--exclude=$EXCLUDE"
 [ -z $QOS ] && QOS="" || QOS="--qos=$QOS"
 [ -z $CONSTRAINT ] && CONSTRAINT="" || CONSTRAINT="--constraint=$CONSTRAINT"
+[ -z $TASKS ] && TASKS=1
 command="$SLURM_COMMAND
     --job-name=$NAME
     --partition=$PARTITION
     --output=$RESOURCE_HOME/forward-util/$NAME.out
     --error=$RESOURCE_HOME/forward-util/$NAME.err
-    -c $CPU
+    --cpus-per-task=$CPU
+    --ntasks=$TASKS
     --mem=$MEM
     --time=$TIME
     $EXCLUDE
