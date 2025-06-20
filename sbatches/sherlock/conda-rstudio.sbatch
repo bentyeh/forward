@@ -16,10 +16,10 @@ module load gcc/9.1.0      # required for Rstudio server
 module load fftw           # required for EBImage
 
 # modules for installing certain packages
-# module load libjpeg-turbo  # Cardinal
-# module load libtiff        # Cardinal
-# module load netcdf         # mzR
-# module load zlib           # mzR
+module load libjpeg-turbo  # Cardinal
+module load libtiff        # Cardinal
+module load netcdf         # mzR
+module load zlib           # mzR
 
 conda activate $ENV
 
