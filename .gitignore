@@ -1,3 +1,2 @@
-params.sh
-pr_*.sh
-ps_*.sh
+last_session.out
+params/
