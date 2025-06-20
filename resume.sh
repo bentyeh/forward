@@ -120,7 +120,7 @@ else
     echo "Job ID: $JOBID. Job state: $STATE. Time remaining: $TIME_LEFT." \
          "CPUs: $CPUS. Memory: $MEM. Partition: $PARTITION. Nodelist: $MACHINE."
     if [[ -z $no_forward ]]; then
-        echo "Resuming port forwarding: ssh -N -L localhost:$LOCALPORT:$MACHINE:$PORT $RESOURCE &"
-        ssh -N -L localhost:$LOCALPORT:$MACHINE:$PORT $RESOURCE &
+        echo "Resuming port forwarding: ssh -Nf -L localhost:$LOCALPORT:$MACHINE:$PORT $RESOURCE &"
+        ssh -Nf -L localhost:$LOCALPORT:$MACHINE:$PORT $RESOURCE &
     fi
 fi

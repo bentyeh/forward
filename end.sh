@@ -19,6 +19,8 @@
 # - PORT
 # - NAME
 
+source ~/.bashrc
+
 # Unset NAME variable in case it is in use (e.g., by WSL)
 unset NAME
 
@@ -39,10 +41,10 @@ source "$params_file"
 [ -z $NAME ] && echo "Need to give NAME of sbatch job to kill!" 1>&2 && exit 1
 
 echo "Killing $NAME slurm job on ${RESOURCE}"
-ssh ${RESOURCE} "squeue --name=$NAME --user=$USERNAME -o '%A' -h | xargs --no-run-if-empty /usr/bin/scancel"
+ssh ${RESOURCE} "squeue --name=$NAME --user=$USERNAME -o '%A' -h | xargs --no-run-if-empty scancel"
 
 echo "Killing listeners on ${RESOURCE}"
-if [ "${RESOURCE}" = "sherlock" ]; then
+if [ "${RESOURCE}" = "sherlock" ] || [ "$RESOURCE" = "caltech" ]; then
     LSOF="/usr/sbin/lsof"
 else
     LSOF="/usr/bin/lsof"
@@ -50,5 +52,5 @@ fi
 ssh ${RESOURCE} "$LSOF -i :$PORT -t | xargs --no-run-if-empty kill"
 
 # lsof is not supported on WSL
-# echo "Killing listeners on localhost"
-# lsof -i:$LOCALPORT -t | xargs --no-run-if-empty kill
+echo "Killing listeners on localhost"
+lsof -i:$LOCALPORT -t | xargs --no-run-if-empty kill

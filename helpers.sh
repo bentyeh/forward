@@ -148,7 +148,7 @@ function setup_port_forwarding() {
     echo
     echo "== Setting up port forwarding =="
     sleep 5
-    echo "ssh -N -L localhost:$LOCALPORT:$MACHINE:$PORT ${RESOURCE}"
-    ssh -N -L localhost:$LOCALPORT:$MACHINE:$PORT ${RESOURCE} &
+    echo "ssh -Nf -L localhost:$LOCALPORT:$MACHINE:$PORT ${RESOURCE}"
+    ssh -Nf -L localhost:$LOCALPORT:$MACHINE:$PORT ${RESOURCE} &
 
 }
